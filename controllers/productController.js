@@ -23,6 +23,26 @@ const getProduct = async (req, res) => {
   res.status(200).json({ product });
 };
 
+// get product using category
+const getProductByCategory = async (req, res) => {
+  const { categoryId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+    return res.status(400).json({ error: "No such item" });
+  }
+
+  const product = await Product.find({ category: categoryId }).populate(
+    "category",
+    "title"
+  );
+
+  if (!product) {
+    return res.status(400).json({ error: "No products found" });
+  }
+
+  res.status(200).json(product);
+};
+
 // post a new product
 const createProduct = async (req, res) => {
   const { title, price, description, rating, image, category } = req.body;
@@ -78,4 +98,5 @@ module.exports = {
   createProduct,
   deleteProduct,
   updateProduct,
+  getProductByCategory,
 };
