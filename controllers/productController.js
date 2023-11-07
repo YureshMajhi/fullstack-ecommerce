@@ -3,7 +3,9 @@ const Product = require("../models/productModel");
 
 // get all products
 const getProducts = async (req, res) => {
-  const product = await Product.find({}).sort({ createdAt: -1 });
+  const product = await Product.find({})
+    .populate("category", "title")
+    .sort({ createdAt: -1 });
 
   res.status(200).json(product);
 };
@@ -49,6 +51,10 @@ const deleteProduct = async (req, res) => {
   }
 
   const product = await Product.findByIdAndDelete(id);
+
+  if (!product) {
+    return res.status(400).json({ error: "No such product" });
+  }
 
   res.status(200).json({ msg: "Product deleted successfully" });
 };

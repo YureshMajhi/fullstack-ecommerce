@@ -24,6 +24,13 @@ const getCategory = async (req, res) => {
 const createCategory = async (req, res) => {
   const { title } = req.body;
 
+  // check if the category already exists
+  const categoryExists = await Category.findOne({ title });
+
+  if (categoryExists) {
+    return res.status(400).json({ error: "Category already exists" });
+  }
+
   try {
     const category = await Category.create({ title });
 
@@ -42,6 +49,11 @@ const deleteCategory = async (req, res) => {
   }
 
   const category = await Category.findOneAndDelete({ _id: id });
+
+  if (!category) {
+    return res.status(400).json({ error: "No such category" });
+  }
+
   res.status(200).json({ msg: "Category deleted successfully" });
 };
 
