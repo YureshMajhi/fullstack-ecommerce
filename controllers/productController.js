@@ -45,15 +45,17 @@ const getProductByCategory = async (req, res) => {
 
 // post a new product
 const createProduct = async (req, res) => {
-  const { title, price, description, rating, image, category } = req.body;
+  const { title, price, description, count_in_stock, rating, category } =
+    req.body;
 
   try {
     const product = await Product.create({
       title,
       price,
       description,
+      count_in_stock,
       rating,
-      image,
+      image: req.file.path,
       category,
     });
     res.status(200).json(product);

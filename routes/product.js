@@ -7,6 +7,7 @@ const {
   updateProduct,
   getProductByCategory,
 } = require("../controllers/productController");
+const upload = require("../utils/fileUpload");
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router.get("/getproduct/:id", getProduct);
 router.get("/getproductsbycategory/:categoryId", getProductByCategory);
 
 // post a new product
-router.post("/createproduct/", createProduct);
+router.post("/addproduct/", upload.single("image"), createProduct);
 
 // delete a product
 router.delete("/deleteproduct/:id", deleteProduct);

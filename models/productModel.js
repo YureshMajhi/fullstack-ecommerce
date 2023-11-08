@@ -17,6 +17,10 @@ const productSchema = new Schema(
       type: String,
       required: true,
     },
+    count_in_stock: {
+      type: Number,
+      required: true,
+    },
     rating: {
       type: Number,
       defaule: 1,
