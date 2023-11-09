@@ -1,7 +1,9 @@
+// importing packages
 require("dotenv").config();
-
 const express = require("express");
 const mongoose = require("mongoose");
+const morgan = require("morgan");
+
 const productRoutes = require("./routes/product");
 const categoryRoutes = require("./routes/category");
 
@@ -10,10 +12,13 @@ const app = express();
 
 // middleware
 app.use(express.json());
+app.use(morgan("dev"));
 
 // routes
 app.use("/api/product", productRoutes);
 app.use("/api/category", categoryRoutes);
+
+app.use("/public/uploads", express.static("public/uploads"));
 
 // connect to db
 mongoose

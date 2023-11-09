@@ -89,9 +89,28 @@ const updateProduct = async (req, res) => {
     return res.status(400).json({ error: "No such product" });
   }
 
-  const product = await Product.findOneAndUpdate({ _id: id }, { ...req.body });
+  try {
+    console.log("Request Body:", req.body); // Log the request body
+    console.log("Request File:", req.file); // Log the uploaded file
 
-  res.status(200).json(product);
+    let updateData = { ...req.body };
+
+    if (req.file) {
+      updateData = { ...updateData, image: req.file.path };
+    }
+
+    const product = await Product.findOneAndUpdate({ _id: id }, updateData, {
+      new: true,
+    });
+
+    if (!product) {
+      return res.status(400).json({ error: "Something went wrong" });
+    }
+
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 
 module.exports = {
