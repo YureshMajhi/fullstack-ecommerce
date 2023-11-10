@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const { emailSender } = require("../utils/emailSender");
 
 // signup method
 const signup = async (req, res) => {
@@ -11,6 +12,14 @@ const signup = async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
+
+  emailSender({
+    from: "noreply@something.com",
+    to: email,
+    subject: "Verification Email",
+    text: "Please click on the following to verify your account",
+    html: "<button>Click to verify</button>",
+  });
 };
 
 module.exports = { signup };
