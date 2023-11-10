@@ -17,6 +17,14 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  role: {
+    type: String,
+    default: "customer",
+  },
+  is_Verified: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 userSchema.statics.signup = async function (email, username, password) {
@@ -38,10 +46,15 @@ userSchema.statics.signup = async function (email, username, password) {
   }
 
   // email already in use or not
-  const exists = await this.findOne({ email });
-
-  if (exists) {
+  const emailExists = await this.findOne({ email });
+  if (emailExists) {
     throw Error("Email is already in use");
+  }
+
+  // user already exist or not
+  const usernameExists = await this.findOne({ username });
+  if (usernameExists) {
+    throw Error("Username already exists");
   }
 
   const salt = await bcrypt.genSalt(10);
