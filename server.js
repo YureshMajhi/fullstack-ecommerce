@@ -4,8 +4,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 
+// router
 const productRoutes = require("./routes/product");
 const categoryRoutes = require("./routes/category");
+const userRoute = require("./routes/user");
 
 // express app
 const app = express();
@@ -17,6 +19,7 @@ app.use(morgan("dev"));
 // routes
 app.use("/api/product", productRoutes);
 app.use("/api/category", categoryRoutes);
+app.use("/api/user", userRoute);
 
 app.use("/public/uploads", express.static("public/uploads"));
 
