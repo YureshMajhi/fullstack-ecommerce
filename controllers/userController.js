@@ -15,6 +15,9 @@ const signup = async (req, res) => {
       process.env.JWT_SECRET_VERIFY,
       { expiresIn: "1d" }
     );
+    if (!verifyToken) {
+      return res.status(400).json({ error: "Error generating token" });
+    }
 
     const url = `http://localhost:${process.env.PORT}/api/user/verifyemail/${verifyToken}`;
 
