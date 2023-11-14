@@ -1,6 +1,11 @@
+// models
 const User = require("../models/userModel");
+const Token = require("../models/tokenModel");
+
 const { emailSender } = require("../utils/emailSender");
-const jwt = require("jsonwebtoken");
+
+// functions
+const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 
 // signup method
@@ -11,16 +16,15 @@ const signup = async (req, res) => {
     const user = await User.signup(email, username, password);
 
     // create verification token
-    const verifyToken = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET_VERIFY,
-      { expiresIn: "1d" }
-    );
+    const verifyToken = await Token.create({
+      token: crypto.randomBytes(16).toString("hex"),
+      userId: user._id,
+    });
     if (!verifyToken) {
       return res.status(400).json({ error: "Error generating token" });
     }
 
-    const url = `http://localhost:${process.env.PORT}/api/user/verifyemail/${verifyToken}`;
+    const url = `http://localhost:${process.env.PORT}/api/user/verifyemail/${verifyToken.token}`;
 
     // send email with verification token
     emailSender({
@@ -39,22 +43,18 @@ const signup = async (req, res) => {
 // verifiy email
 const verifyEmail = async (req, res) => {
   const { token } = req.params;
-  let userId;
 
   // verify if token is valid
-  jwt.verify(token, process.env.JWT_SECRET_VERIFY, (error, decoded) => {
-    if (error) {
-      return res
-        .status(400)
-        .json({ error: "Invalid token or token may have expired" });
-    }
-
-    userId = decoded.userId;
-  });
+  const verifyToken = await Token.findOne({ token });
+  if (!verifyToken) {
+    return res
+      .status(400)
+      .json({ error: "Invalid token or token may have expired" });
+  }
 
   // verify user email
   try {
-    const user = await User.findOne({ _id: userId });
+    const user = await User.findOne({ _id: verifyToken.userId });
     if (!user) {
       return res.status(400).json({ error: "User not found" });
     }
@@ -85,17 +85,16 @@ const forgetPassword = async (req, res) => {
   }
 
   // generate token for user
-  const forgetToken = jwt.sign(
-    { userId: user._id },
-    process.env.JWT_SECRET_FORGET,
-    { expiresIn: "1d" }
-  );
+  const forgetToken = await Token.create({
+    token: crypto.randomBytes(16).toString("hex"),
+    userId: user._id,
+  });
   if (!forgetToken) {
     return res.status(400).json({ error: "Error generating forgetToken" });
   }
 
   // send email with url
-  const url = `http://localhost:${process.env.PORT}/api/user/resetpassword/${forgetToken}`;
+  const url = `http://localhost:${process.env.PORT}/api/user/resetpassword/${forgetToken.token}`;
   emailSender({
     from: "noreply@something.com",
     to: email,
@@ -113,21 +112,17 @@ const forgetPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
-  let userId;
 
   // verify the token
-  jwt.verify(token, process.env.JWT_SECRET_FORGET, (error, decoded) => {
-    if (error) {
-      return res
-        .status(400)
-        .json({ error: "Invalid token or token may have expired" });
-    }
-
-    userId = decoded.userId;
-  });
+  const forgetToken = await Token.findOne({ token });
+  if (!forgetToken) {
+    return res
+      .status(400)
+      .json({ error: "Invalid token or token may have expired" });
+  }
 
   // check user
-  const user = await User.findOne({ _id: userId });
+  const user = await User.findOne({ _id: forgetToken.userId });
   if (!user) {
     return res.status(400).json({ error: "User doesnot exist" });
   }
