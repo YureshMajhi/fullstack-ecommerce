@@ -7,6 +7,7 @@ const { emailSender } = require("../utils/emailSender");
 // functions
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // signup method
 const signup = async (req, res) => {
@@ -137,4 +138,23 @@ const resetPassword = async (req, res) => {
   res.status(200).json({ msg: "Password reset successfully" });
 };
 
-module.exports = { signup, verifyEmail, forgetPassword, resetPassword };
+// login method
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.login(email, password);
+    const { _id, username, role } = user;
+
+    // generate token
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "1d",
+    });
+
+    res.status(200).json({ token, user: { _id, username, email, role } });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = { signup, verifyEmail, forgetPassword, resetPassword, login };

@@ -65,4 +65,30 @@ userSchema.statics.signup = async function (email, username, password) {
   return user;
 };
 
+userSchema.statics.login = async function (email, password) {
+  // validate
+  if (!email || !password) {
+    throw Error("All feilds are required");
+  }
+
+  // check email
+  const user = await this.findOne({ email });
+  if (!user) {
+    throw Error("Email is not registered");
+  }
+
+  // check password
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    throw Error("Incorrect Password");
+  }
+
+  // check if the user is verified
+  if (!user.is_Verified) {
+    throw Error("User is not verified");
+  }
+
+  return user;
+};
+
 module.exports = mongoose.model("User", userSchema);
