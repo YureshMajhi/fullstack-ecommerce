@@ -6,6 +6,7 @@ const {
   deleteCategory,
   updateCategory,
 } = require("../controllers/categoryController");
+const { requireAuth } = require("../controllers/userController");
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.get("/", getCategories);
 router.get("/:id", getCategory);
 
 // create a category
-router.post("/", createCategory);
+router.post("/", requireAuth, createCategory);
 
 // delete a category
 router.delete("/:id", deleteCategory);
