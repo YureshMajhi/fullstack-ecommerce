@@ -1,6 +1,9 @@
 const OrderItems = require("../models/orderItemsModel");
 const Order = require("../models/orderModel");
 
+const mongoose = require("mongoose");
+
+// create an order
 const palceOrder = async (req, res) => {
   const orderItemsIds = await Promise.all(
     // store order items in orderItemsModel
@@ -37,17 +40,33 @@ const palceOrder = async (req, res) => {
   // calculate whole total
   const total = individual_totals.reduce((acc, cur) => acc + cur);
 
+  const {
+    user,
+    contact_person,
+    street,
+    city,
+    postal_code,
+    state,
+    country,
+    phone,
+  } = req.body;
+
+  // check if user id is valid or not
+  if (!mongoose.Types.ObjectId.isValid(user)) {
+    return res.status(400).json({ error: "No such user" });
+  }
+
   const order = await Order.create({
     orderItems: orderItemsIds,
     total: total,
-    user: req.body.user,
-    contact_person: req.body.contact_person,
-    street: req.body.street,
-    city: req.body.city,
-    postal_code: req.body.postal_code,
-    state: req.body.state,
-    country: req.body.country,
-    phone_number: req.body.phone_number,
+    user,
+    contact_person,
+    street,
+    city,
+    postal_code,
+    state,
+    country,
+    phone,
   });
 
   if (!order) {
@@ -55,4 +74,73 @@ const palceOrder = async (req, res) => {
   }
 
   res.status(200).json(order);
+};
+
+// get all orders
+const getOrders = async (req, res) => {
+  const orders = await Order.find()
+    .populate("user", "username")
+    .populate({
+      path: "orderItems",
+      populate: { path: "product", populate: "category" },
+    });
+
+  if (!orders) {
+    return res.status(400).json({ error: "Something went wrong" });
+  }
+  res.status(200).json(orders);
+};
+
+// get order details
+const getOrderDetails = async (req, res) => {
+  const { orderId } = req.params;
+
+  // check if order id is valid or not
+  if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    return res.status(400).json({ error: "No such order" });
+  }
+
+  const order = await Order.findOne({ _id: orderId });
+  if (!order) {
+    return res.status(400).json({ error: "Something went wrong" });
+  }
+
+  res.status(200).json(order);
+};
+
+// get order of a particular user
+const getUserOrder = async (req, res) => {
+  const { userId } = req.params;
+
+  // check if user id is valid or not
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ error: "No such user" });
+  }
+
+  const order = await Order.findOne({ user: userId });
+  if (!order) {
+    return res.status(400).json({ error: "Something went wrong" });
+  }
+
+  res.status(200).json(order);
+};
+
+//get order by status
+const getOrderStatus = async (req, res) => {
+  const { status } = req.query;
+
+  const order = await Order.find({ status: status });
+  if (!order) {
+    return res.status(400).json({ error: "Something went wrong" });
+  }
+
+  res.status(200).json(order);
+};
+
+module.exports = {
+  palceOrder,
+  getOrders,
+  getOrderDetails,
+  getUserOrder,
+  getOrderStatus,
 };
