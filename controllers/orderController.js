@@ -137,10 +137,29 @@ const getOrderStatus = async (req, res) => {
   res.status(200).json(order);
 };
 
+// update status
+const updateOrderStatus = async (req, res) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
+
+  const order = await Order.findOneAndUpdate(
+    { _id: orderId },
+    { status },
+    { new: true }
+  );
+
+  if (!order) {
+    return res.status(400).json({ error: "Failed to update order status" });
+  }
+
+  res.status(200).json({ msg: "Order status updated" });
+};
+
 module.exports = {
   palceOrder,
   getOrders,
   getOrderDetails,
   getUserOrder,
   getOrderStatus,
+  updateOrderStatus,
 };

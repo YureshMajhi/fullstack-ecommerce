@@ -5,6 +5,7 @@ const {
   getOrderDetails,
   getUserOrder,
   getOrderStatus,
+  updateOrderStatus,
 } = require("../controllers/orderController");
 
 const router = express.Router();
@@ -23,5 +24,8 @@ router.get("/getuserorder/:userId", getUserOrder);
 
 // get order from status
 router.get("/getorderstatus", getOrderStatus);
+
+// update the status of the order
+router.patch("/updateorderstatus/:orderId", updateOrderStatus);
 
 module.exports = router;
