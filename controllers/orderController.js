@@ -155,6 +155,35 @@ const updateOrderStatus = async (req, res) => {
   res.status(200).json({ msg: "Order status updated" });
 };
 
+// delete order
+const deleteOrder = (req, res) => {
+  const { orderId } = req.params;
+
+  Order.findOneAndDelete({ _id: orderId })
+    .then(async (order) => {
+      if (!order) {
+        return res.status(400).json({ error: "Order not found" });
+      }
+      await Promise.all(
+        order.orderItems.map((item) => {
+          OrderItems.findOneAndDelete({ _id: item })
+            .then((orderItem) => {
+              if (!orderItem) {
+                return res.status(400).json({ error: "Order Item not found" });
+              }
+            })
+            .catch((error) => {
+              return res.status(400).json({ error: error.message });
+            });
+        })
+      );
+      res.status(200).json({ msg: "Order deleted successfully" });
+    })
+    .catch((error) => {
+      return res.status(400).json({ error: error.message });
+    });
+};
+
 module.exports = {
   palceOrder,
   getOrders,
@@ -162,4 +191,5 @@ module.exports = {
   getUserOrder,
   getOrderStatus,
   updateOrderStatus,
+  deleteOrder,
 };
