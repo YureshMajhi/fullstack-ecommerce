@@ -26,7 +26,7 @@ const signup = async (req, res) => {
       return res.status(400).json({ error: "Error generating token" });
     }
 
-    const url = `http://localhost:${process.env.PORT}/api/user/verifyemail/${verifyToken.token}`;
+    const url = `${process.env.FRONTEND_URL}/emailverification/${verifyToken.token}`;
 
     // send email with verification token
     emailSender({
@@ -109,7 +109,7 @@ const resentVerify = async (req, res) => {
   }
 
   // send email with verification token
-  const url = `http://localhost:${process.env.PORT}/api/user/verifyemail/${verifyToken.token}`;
+  const url = `${process.env.FRONTEND_URL}/emailverification/${verifyToken.token}`;
   emailSender({
     from: "noreply@something.com",
     to: email,
@@ -139,7 +139,7 @@ const forgetPassword = async (req, res) => {
   }
 
   // send email with url
-  const url = `http://localhost:${process.env.PORT}/api/user/resetpassword/${forgetToken.token}`;
+  const url = `${process.env.FRONTEND_URL}/resetpassword/${forgetToken.token}`;
   emailSender({
     from: "noreply@something.com",
     to: email,
