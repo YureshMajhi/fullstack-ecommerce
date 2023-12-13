@@ -1,6 +1,7 @@
 // models
 const User = require("../models/userModel");
 const Token = require("../models/tokenModel");
+const validator = require("validator");
 
 const { emailSender } = require("../utils/emailSender");
 
@@ -157,6 +158,14 @@ const forgetPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
+
+  if (!password) {
+    return res.status(400).json({ error: "Password feild is required" });
+  }
+
+  if (!validator.isStrongPassword(password)) {
+    return res.status(400).json({ error: "Password is not strong enough" });
+  }
 
   // verify the token
   const forgetToken = await Token.findOne({ token });
