@@ -31,6 +31,7 @@ const productSchema = new Schema(
     category: {
       type: ObjectId,
       ref: "Category",
+      required: true,
     },
   },
   { timestamps: true }
