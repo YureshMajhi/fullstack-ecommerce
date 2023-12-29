@@ -18,7 +18,7 @@ const getProduct = async (req, res) => {
     return res.status(400).json({ error: "No such Product" });
   }
 
-  const product = await Product.findById(id);
+  const product = await Product.findById(id).populate("category");
 
   res.status(200).json(product);
 };
