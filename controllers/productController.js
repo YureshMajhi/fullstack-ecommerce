@@ -20,7 +20,7 @@ const getProduct = async (req, res) => {
 
   const product = await Product.findById(id);
 
-  res.status(200).json({ product });
+  res.status(200).json(product);
 };
 
 // get product using category
