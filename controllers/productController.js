@@ -90,9 +90,6 @@ const updateProduct = async (req, res) => {
   }
 
   try {
-    console.log("Request Body:", req.body); // Log the request body
-    console.log("Request File:", req.file); // Log the uploaded file
-
     let updateData = { ...req.body };
 
     if (req.file) {
