@@ -110,6 +110,30 @@ const updateProduct = async (req, res) => {
   }
 };
 
+// get filtered products
+const getFilteredProducts = async (req, res) => {
+  const filterArgs = {};
+  for (var key in req.body.filters) {
+    if (req.body.filters[key].length > 0) {
+      if (key === "category") {
+        filterArgs[key] = req.body.filters[key];
+      } else {
+        filterArgs[key] = {
+          $gte: req.body.filters[key][0],
+          $lte: req.body.filters[key][1],
+        };
+      }
+    }
+  }
+
+  let products = await Product.find(filterArgs).populate("category", "title");
+  if (!products) {
+    return res.status(400).json({ error: "Product filtering error" });
+  }
+
+  res.send(products);
+};
+
 module.exports = {
   getProducts,
   getProduct,
@@ -117,4 +141,5 @@ module.exports = {
   deleteProduct,
   updateProduct,
   getProductByCategory,
+  getFilteredProducts,
 };

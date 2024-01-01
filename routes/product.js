@@ -6,6 +6,7 @@ const {
   deleteProduct,
   updateProduct,
   getProductByCategory,
+  getFilteredProducts,
 } = require("../controllers/productController");
 const upload = require("../utils/fileUpload");
 
@@ -28,5 +29,8 @@ router.delete("/deleteproduct/:id", deleteProduct);
 
 // update a product
 router.patch("/updateproduct/:id", upload.single("image"), updateProduct);
+
+// filtering products
+router.post("/getfilteredproduct", getFilteredProducts);
 
 module.exports = router;
