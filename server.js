@@ -10,6 +10,7 @@ const productRoutes = require("./routes/product");
 const categoryRoutes = require("./routes/category");
 const userRoute = require("./routes/user");
 const orderRoute = require("./routes/order");
+const paymentRoute = require("./routes/paymentRoute");
 
 // express app
 const app = express();
@@ -24,6 +25,7 @@ app.use("/api/product", productRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/user", userRoute);
 app.use("/api/order", orderRoute);
+app.use("/payment", paymentRoute);
 
 app.use("/public/uploads", express.static("public/uploads"));
 
