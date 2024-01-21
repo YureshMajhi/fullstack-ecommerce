@@ -117,7 +117,14 @@ const getUserOrder = async (req, res) => {
     return res.status(400).json({ error: "No such user" });
   }
 
-  const order = await Order.findOne({ user: userId });
+  const order = await Order.find({ user: userId })
+    .sort({ createdAt: -1 })
+    .populate("user", "username")
+    .populate({
+      path: "orderItems",
+      populate: { path: "product", populate: "category" },
+    });
+
   if (!order) {
     return res.status(400).json({ error: "Something went wrong" });
   }
