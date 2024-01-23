@@ -100,7 +100,10 @@ const getOrderDetails = async (req, res) => {
     return res.status(400).json({ error: "No such order" });
   }
 
-  const order = await Order.findOne({ _id: orderId });
+  const order = await Order.findOne({ _id: orderId }).populate({
+    path: "orderItems",
+    populate: { path: "product", populate: "category" },
+  });
   if (!order) {
     return res.status(400).json({ error: "Something went wrong" });
   }
