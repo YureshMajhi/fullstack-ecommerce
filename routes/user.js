@@ -7,6 +7,8 @@ const {
   login,
   logout,
   resentVerify,
+  getallusers,
+  updateRole,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -31,5 +33,11 @@ router.post("/login", login);
 
 // signout route
 router.get("/signout", logout);
+
+// get users list
+router.get("/getuserlist", getallusers);
+
+// update role of user
+router.patch("/updaterole/:id", updateRole);
 
 module.exports = router;

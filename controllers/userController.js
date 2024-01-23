@@ -233,6 +233,31 @@ const requireAuth = expressjwt({
   secret: process.env.JWT_SECRET_KEY,
 });
 
+const getallusers = async (req, res) => {
+  let user = await User.find();
+  if (!user) {
+    return res.status(400).json({ error: "something went wrong" });
+  }
+
+  res.send(user);
+};
+
+const updateRole = async (req, res) => {
+  let user = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      role: req.body.role,
+    },
+    { new: true }
+  );
+
+  if (!user) {
+    return res.status(400).json({ error: "Unable to update role" });
+  }
+
+  res.send(user);
+};
+
 module.exports = {
   signup,
   verifyEmail,
@@ -242,4 +267,6 @@ module.exports = {
   logout,
   resentVerify,
   requireAuth,
+  getallusers,
+  updateRole,
 };
