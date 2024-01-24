@@ -140,7 +140,8 @@ const forgetPassword = async (req, res) => {
   }
 
   // send email with url
-  const url = `${process.env.FRONTEND_URL}/resetpassword/${forgetToken.token}`;
+  // const url = `${process.env.FRONTEND_URL}/resetpassword/${forgetToken.token}`;
+  const url = `lol/resetpassword/${forgetToken.token}`;
   emailSender({
     from: "noreply@something.com",
     to: email,
