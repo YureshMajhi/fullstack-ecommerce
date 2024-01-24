@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
+const path = require("path");
 
 // router
 const productRoutes = require("./routes/product");
@@ -28,6 +29,12 @@ app.use("/api/order", orderRoute);
 app.use("/payment", paymentRoute);
 
 app.use("/public/uploads", express.static("public/uploads"));
+
+// static files
+app.use(express.static(path.join(__dirname, "./client/dist")));
+app.get("*", function (req, res) {
+  res.sendFile(path.join(__dirname, "./client/dist/index.html"));
+});
 
 // connect to db
 mongoose
